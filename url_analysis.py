@@ -3,7 +3,11 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sklearn.cluster import DBSCAN
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 import plotly.express as px
+import pickle
 import matplotlib.pyplot as plt
 
 # read dataset
@@ -48,6 +52,7 @@ dt = dt.drop(columns=['Unnamed: 0.1', 'Unnamed: 0'])
 
 dt_identification = dt[['uid', 'originh', 'originp', 'responh', 'responp']].copy()
 dt_values = dt.drop(columns=['uid', 'originh', 'originp', 'responh', 'responp'])
+dt_values = dt_values.fillna(0)
 # dt_identification  # debugging table plotting
 # dt_values  # debugging table plotting
 
@@ -73,8 +78,8 @@ fig = px.scatter_3d(
 fig.update_traces(marker=dict(size=1))
 fig.write_html("url_analysis_normalized_pca.html")
 
-# 6. Step: Clustering of the dataset together with a plotting of the Clustering results
-
+# 6. Step - Clustering of the dataset together with a plotting of the Clustering results
+"""
 dbscan = DBSCAN(eps=0.35, min_samples=10)
 dt_clustered = dbscan.fit_predict(dt_normalized_l2)
 dt_clustered = pd.DataFrame(dt_clustered)
@@ -88,3 +93,26 @@ fig = px.scatter_3d(
 )
 fig.update_traces(marker=dict(size=1))
 fig.write_html("url_analysis_dbscan.html")
+"""
+
+# 7.Step - SVM Analysis
+
+X_train, X_test, Y_train, Y_test = train_test_split(dt_normalized_l2, labels, test_size=0.33)
+
+clf = SVC(gamma='auto')
+
+print('now training')
+clf.fit(X_train, Y_train)
+print('training finnished')
+
+pred_labels = clf.predict(X_test)
+target_names = [
+    'outlier',
+    'normal',
+    'bot',
+    'attack'
+]
+print(classification_report(Y_test, pred_labels, target_names=target_names))
+
+with open('modelweight.pickle', 'wb') as handle:
+    pickle.dump(clf, handle)
