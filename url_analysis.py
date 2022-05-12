@@ -112,6 +112,7 @@ target_names = [
     'bot',
     'attack'
 ]
+Y_test = Y_test.fillna(0)
 print(classification_report(Y_test, pred_labels, target_names=target_names))
 
 with open('modelweight.pickle', 'wb') as handle:
