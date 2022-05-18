@@ -4,6 +4,7 @@ import torch
 from sklearn.utils import resample
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
+import numpy as np
 
 #
 #
@@ -44,8 +45,10 @@ class CustomDataLoader():
         coder = OneHotEncoder(sparse=False)
         
         self.labels = coder.fit_transform(df.traffic_category.to_numpy().reshape(len(df.traffic_category), 1))
-        print(self.labels)
+        #self.labels = df.traffic_category.to_numpy()
+
         self.df_values_no_traffic = df.drop(columns=['uid', 'originh', 'originp', 'responh', 'responp','traffic_category', 'Label'])
+        self.df_values_no_traffic = self.df_values_no_traffic.astype(np.double)
         self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.df_values_no_traffic, self.labels, test_size=0.2)
     def __len__(self):
         return len(self.y_train)
@@ -54,7 +57,7 @@ class CustomDataLoader():
         self.idx = idx
         self.X = self.x_train.iloc[[self.idx]].values
         self.Y = self.y_train[self.idx]
-        return torch.tensor(self.X), torch.tensor(self.Y)
+        return torch.tensor(self.X).double(), torch.tensor(self.Y).double()
     
     def returnTestSet(self):
         return self.x_test, self.y_test
@@ -62,6 +65,6 @@ class CustomDataLoader():
 newdata = CustomDataLoader()
 
 X, Y = next(iter(newdata))
-print(Y.shape)
+print(Y)
 
 

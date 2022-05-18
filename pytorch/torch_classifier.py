@@ -1,4 +1,3 @@
-import pandas as pd
 from sklearn.model_selection import train_test_split
 import torch.optim as optim
 import torch.nn as nn
@@ -12,9 +11,10 @@ import re
 
 ### options
 
-EPOCHS = 10
+EPOCHS = 100
 save_fd = Path('pytorch\models')
-now = re.sub("[ :.-]", "", str(datetime.now()))
+now = re.sub("[ :.-]", "", str(datetime.now()).split('.')[0])
+
 
 ### loading data
 print("Loading data")
@@ -37,16 +37,15 @@ for epoch in range(EPOCHS):
         optimizer.zero_grad()
 
         out = net(X)
-
+        out = out.squeeze()
         loss = criterion(out, Y)
         loss.backward()
         optimizer.step()
 
         track_loss += loss.item()
 
-        if i % 1000 == 0:
+        if i % 200 == 0 and i != 0:
             print(f'[{epoch + 1}, {i + 1:5d}] loss: {track_loss / 1000:.3f}')
             track_loss = 0.0
-    save_fp = save_fd / now + '_' + epoch + '.model'
+    save_fp = save_fd / (now + '_' + str(epoch) + '.model')
     torch.save(net.state_dict(), save_fp)
-
