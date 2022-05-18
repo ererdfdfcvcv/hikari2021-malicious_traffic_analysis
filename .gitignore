@@ -2,3 +2,7 @@
 *.csv
 
 pytorch/__pycache__/
+
+pytorch/models/
+
+pytorch/loss/

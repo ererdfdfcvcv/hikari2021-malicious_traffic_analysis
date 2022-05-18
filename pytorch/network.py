@@ -26,4 +26,3 @@ class Net(nn.Module):
         return x
 
 
-net = Net().double()
