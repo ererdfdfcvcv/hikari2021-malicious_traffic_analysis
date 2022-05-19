@@ -1,4 +1,4 @@
-import torch
+from turtle import forward
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -26,3 +26,27 @@ class Net(nn.Module):
         return x
 
 
+class DenseNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv1d(1,20, 3, stride=2)
+        self.conv2 = nn.Conv1d(20, 50, kernel_size=5)
+        self.conv3 = nn.Conv1d(50, 20, kernel_size=3)
+        self.bn1 = nn.BatchNorm1d(20)
+        self.bn2 = nn.BatchNorm1d(50)
+        self.drop1 = nn.Dropout(0.6)
+        self.drop2 = nn.Dropout(0.3)
+        self.flat1 = nn.Flatten(1,2)
+        self.lin1 = nn.Linear(660, 6)
+    
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = self.drop1(x)
+        x = self.bn1(x)
+        x = F.relu(self.conv2(x))
+        x = self.drop2(x)
+        x = self.bn2(x)
+        x = self.conv3(x)
+        x = self.flat1(x)
+        x = self.lin1(x)
+        return x
