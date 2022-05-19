@@ -1,9 +1,10 @@
-import pandas as pd
+import pickle
 from sklearn.model_selection import train_test_split
 import torch.optim as optim
 import torch.nn as nn
 import torch
-from network import net
+from network import Net
+from network import DenseNet
 from dataset import CustomDataLoader
 from torch.utils.data import DataLoader
 from pathlib import Path
@@ -11,42 +12,61 @@ from datetime import datetime
 import re
 
 ### options
+EPOCHS = 50
+model_fd = Path('pytorch\models')
+loss_fd = Path('pytorch\loss')
+now = re.sub("[ :.-]", "", str(datetime.now()).split('.')[0])
+loss_list = list()
 
-EPOCHS = 10
-save_fd = Path('pytorch\models')
-now = re.sub("[ :.-]", "", str(datetime.now()))
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-### loading data
-print("Loading data")
-cstData = CustomDataLoader()
-train_dataloader = DataLoader(cstData, batch_size=64, shuffle=True)
+def main():
+    ### loading data
+    print("Loading data")
+    cstData = CustomDataLoader()
+    train_dataloader = DataLoader(cstData, batch_size=64, shuffle=True)
+    print("Loading finnished")
 
-x_test, y_test = cstData.returnTestSet() 
-print("Loading finnished")
+    net = Net().double().to(device)
+    #net = DenseNet().double().to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+    for epoch in range(EPOCHS):
+        print(f"Now in Epoch {epoch}")
+        track_loss = 0.0
+        for i, data in enumerate(train_dataloader):
+            X, Y = data
+            X = X.to(device)
+            Y = Y.to(device).type(torch.float)
+            optimizer.zero_grad()
+
+            out = net(X)
+            out = out.squeeze()
+            loss = criterion(out, Y)
+            loss.backward()
+            optimizer.step()
+
+            track_loss += loss.item()
+
+            if i % 200 == 0 and i != 0:
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {track_loss / 1000:.3f}')
+                loss_list.append(track_loss)
+                track_loss = 0.0
 
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+        model_fp = model_fd / (now + '_' + str(epoch+1) + '.model')
+        loss_fp = loss_fd / (now + '.loss')
+        loss_fp.touch(exist_ok=True)
+        if (epoch + 1) % 5 == 0:
+            torch.save(net.state_dict(), model_fp)
+            with open(loss_fp, 'wb') as handle:
+                pickle.dump(loss_list, handle)
 
-for epoch in range(EPOCHS):
-    print(f"Now in Epoch {epoch}")
-    track_loss = 0.0
-    for i, data in enumerate(train_dataloader):
-        X, Y = data
 
-        optimizer.zero_grad()
+if __name__ == "__main__":
+    main()
 
-        out = net(X)
 
-        loss = criterion(out, Y)
-        loss.backward()
-        optimizer.step()
-
-        track_loss += loss.item()
-
-        if i % 1000 == 0:
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {track_loss / 1000:.3f}')
-            track_loss = 0.0
-    save_fp = save_fd / now + '_' + epoch + '.model'
-    torch.save(net.state_dict(), save_fp)
-
+# Choose larger batchsize
+# 
