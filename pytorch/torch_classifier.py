@@ -5,14 +5,16 @@ import torch.nn as nn
 import torch
 from network import Net
 from network import DenseNet
+from network import DenseNet_Label
 from dataset import CustomDataLoader
+from dataset import CustomDataLoader_Labels
 from torch.utils.data import DataLoader
 from pathlib import Path
 from datetime import datetime
 import re
 
 ### options
-EPOCHS = 50
+EPOCHS = 100
 model_fd = Path('pytorch\models')
 loss_fd = Path('pytorch\loss')
 now = re.sub("[ :.-]", "", str(datetime.now()).split('.')[0])
@@ -23,12 +25,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def main():
     ### loading data
     print("Loading data")
-    cstData = CustomDataLoader()
+    cstData = CustomDataLoader_Labels()
     train_dataloader = DataLoader(cstData, batch_size=64, shuffle=True)
     print("Loading finnished")
 
-    net = Net().double().to(device)
-    #net = DenseNet().double().to(device)
+    #net = Net().double().to(device)
+    net = DenseNet_Label().double().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -66,7 +68,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Choose larger batchsize
-# 
