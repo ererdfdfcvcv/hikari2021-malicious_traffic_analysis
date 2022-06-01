@@ -9,7 +9,7 @@ import numpy as np
 
 
 
-model_path = Path('pytorch\\models\\20220520104430_10.model')
+model_path = Path('pytorch\\models\\20220601153623_20.model')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 ### loading data
@@ -19,7 +19,8 @@ train_dataloader = DataLoader(cstData, batch_size=64, shuffle=True)
 print("Loading finnished")
 
 #net = Net().double().to(device)
-net = DenseNet_Label().double().to(device)
+#net = DenseNet_Label().double().to(device)
+net = DenseNet().double().to(device)
 net.load_state_dict(torch.load(model_path))
 net.eval()
 

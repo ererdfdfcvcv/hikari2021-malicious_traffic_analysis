@@ -19,7 +19,7 @@ class CustomDataLoader():
 
 class CustomDataLoader_Labels():
     def __init__(self):
-        with open("pytorch/training_data_by_labels.pickle", 'rb') as handle:
+        with open("pytorch/resampled_32_traffic_category.pickle", 'rb') as handle:
             training_data = pickle.load(handle)
             self.x_train = training_data[0]
             self.y_train = training_data[2]
@@ -52,7 +52,7 @@ class CustomDataLoader_testing():
 
 class CustomDataLoader_testing_Labels():
     def __init__(self):
-        with open("pytorch/training_data_by_labels.pickle", 'rb') as handle:
+        with open("pytorch/resampled_32_traffic_category.pickle", 'rb') as handle:
             training_data = pickle.load(handle)
             self.x_test = training_data[1]
             self.y_test = training_data[3]

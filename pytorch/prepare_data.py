@@ -73,7 +73,7 @@ def data_by_labels():
     df_values_no_traffic = df.drop(columns=['uid', 'originh', 'originp', 'responh', 'responp','traffic_category', 'Label'])
     df_values_no_traffic = df_values_no_traffic.astype(np.double)
     x_train, x_test, y_train, y_test = train_test_split(df_values_no_traffic, labels, test_size=0.2)
-
+    print(y_train)
     training_data = [x_train, x_test, y_train, y_test]
 
     with open("pytorch/training_data_by_labels.pickle", 'wb') as handle:
