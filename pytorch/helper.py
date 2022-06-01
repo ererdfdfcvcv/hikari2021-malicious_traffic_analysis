@@ -4,7 +4,7 @@ import pickle
 
 
 def print_loss():
-    fp = Path('pytorch\\loss\\20220519162135.loss')
+    fp = Path('pytorch\\loss\\20220520104430.loss')
     with open(fp, 'rb') as handle:
         loss = pickle.load(handle)
     x = range(len(loss))
