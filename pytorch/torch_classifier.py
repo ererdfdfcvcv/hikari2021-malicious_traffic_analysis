@@ -30,7 +30,8 @@ def main():
     print("Loading finnished")
 
     #net = Net().double().to(device)
-    net = DenseNet_Label().double().to(device)
+    #net = DenseNet_Label().double().to(device)
+    net = DenseNet().double().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
