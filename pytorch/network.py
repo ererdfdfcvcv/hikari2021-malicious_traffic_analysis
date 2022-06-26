@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class Net(nn.Module):
+class Net(nn.Module): # First testing network with linear layers
     def __init__(self):
         super().__init__()
         self.lin1 = nn.Linear(79, 200)
@@ -25,7 +25,7 @@ class Net(nn.Module):
         return x
 
 
-class DenseNet(nn.Module):
+class DenseNet(nn.Module): # Network for classifying all 6 traffic labels
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv1d(1,20, 3, stride=2)
@@ -50,7 +50,7 @@ class DenseNet(nn.Module):
         x = self.lin1(x)
         return x
 
-class DenseNet_Label(nn.Module):
+class DenseNet_Label(nn.Module): # Network for binary classification if its malicious traffic or not
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv1d(1,20, 3, stride=2)
